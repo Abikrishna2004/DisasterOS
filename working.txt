@@ -1,0 +1,36 @@
+# DisasterOS | Working Methodology
+
+This document outlines the operational framework and technical methodology used by the Disaster Intelligence Platform to transform raw geospatial data into actionable risk assessments.
+
+## 1. Data Acquisition Phase (Ingestion)
+The system operates on an automated ingestion loop that monitors multiple data streams:
+- **Atmospheric Telemetry**: The backend queries the `Open-Meteo API` for current weather parameters including Precipitation (mm), Wind Speed (km/h), Surface Pressure (hPa), and Temperature (°2m).
+- **Geosat Discovery**: Interactive user events (Search or Map Click) trigger the `Nominatim API` to fetch precise latitude/longitude coordinates and regional naming.
+- **Satellite Pipeline**: The system simulates a connection to `ESA Copernicus (Sentinel-1/2)` nodes, tracking processing stages from raw data fetch to cloud elimination using CNN (Convolutional Neural Network) logic.
+
+## 2. Preprocessing & Feature Engineering (Module 2)
+Raw data is rarely ready for ML models. The `DataProcessor` module handles:
+- **Imputation & Cleaning**: Removing outliers from telemetry sensors (e.g., negative wind speeds or extreme pressure spikes).
+- **Feature Extraction**: Using coordinate lookups to derive geospatial attributes such as Elevation (m) and Slope Angle (degrees). For instance, the system automatically detects high-slope hazards in the Himalayan belt (>28°N).
+- **Temporal Normalization**: Weather data is cached for 300 seconds to prevent API rate limiting while maintaining near-real-time fidelity.
+
+## 3. ML Inference Logic (Module 3)
+The `DisasterPredictor` engine applies a multi-hazard predictive framework:
+- **Flood Prediction**: A weighted model analyzing $Rainfall \times Elevation \times SoilSat$. Low-lying coastal areas with high precipitation intensity receive prioritized risk scores.
+- **Landslide Prediction**: Primarily driven by $Slope \times Rainfall \times SoilType$. The model monitors "Soil Saturation" thresholds where saturation > 80% triggers critical landslide warnings.
+- **Cyclone Prediction**: Analysis of $SeaTemp \times WindSpeed \times AtmosphericPressure$. The model triggers when wind speeds exceed 60km/h and pressure drops below 1000hPa.
+
+## 4. Real-Time Data Synchronization (The SSE Bridge)
+To ensure the dashboard remains operational without manual refreshes, we utilize **Server-Sent Events (SSE)**:
+- The backend pushes a JSON payload every 5 seconds over a persistent HTTP connection.
+- **Micro-Jittering**: To simulate live high-frequency sensor readings, the backend adds ±0.5% "sensor drift" to the risk scores, providing a more biological and realistic "live" feel to the telemetry dashboard.
+
+## 5. Visualization & Decision Support
+The methodology concludes at the User Interface (React.js):
+- **GIS Rendering**: Leaflet.js processes the risk scores to render colored priority markers (Green/Yellow/Red).
+- **Trend Analysis**: Recharts generates a 24-hour "Risk Trajectory," allowing disaster coordinators to visualize whether a threat is plateauing, rising, or receding.
+- **Alert Dispatch**: The backend's Notification Engine analyzes the finalized risk scores and generates urgent dispatches (e.g., "⚠ CRITICAL: Flood Risk") when confidence intervals exceed 75%.
+
+---
+**Summary of Methodology Flow:**
+[Ingestion] -> [Preprocessing] -> [ML Inference] -> [SSE Stream] -> [GIS Visualization]

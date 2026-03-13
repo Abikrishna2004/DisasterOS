@@ -1,0 +1,114 @@
+# DisasterOS | AI-Powered Disaster Intelligence Platform
+
+## 1. Problem Statement
+Natural disasters such as floods, landslides, and cyclones cause immense loss of life and property due to delayed response times and a lack of real-time situational awareness. Traditional disaster management relies on static maps and historical data, which fail to capture the dynamic nature of environmental hazards. There is a critical need for a centralized, real-time intelligence hub that combines satellite imagery, live weather telemetry, and machine learning to predict risks before they escalate.
+
+## 2. Why DisasterOS is Needed
+- **Proactive Mitigation**: Shifts disaster management from reactive to proactive by providing early warning confidence scores.
+- **Real-Time Data Fusion**: Combines Global Satellite feeds with local weather telemetry.
+- **Accessible Intelligence**: Provides an easy-to-use interface for emergency responders and citizens to monitor specific regions.
+- **Dynamic Risk Scaling**: Risks are calculated based on actual live conditions (wind speed, precipitation) rather than just static high-risk labels.
+
+## 3. Core Functionalities
+- **Live Intelligence Map**: Functional satellite view with real-time city overlays and heatmaps of disaster risks.
+- **Dynamic Location Ingestion**: Users can search for any city globally or click any point on the map to start real-time telemetry tracking for that region.
+- **Satellite Intelligence Portal**: Direct interface showing the health of the satellite pipeline (Sentinel-1, Sentinel-2) and processing stages.
+- **AI Risk Engine**: ML-based prediction models for:
+    - **Flood**: Calculated via rainfall, elevation, and soil moisture.
+    - **Landslide**: Calculated via slope angle and precipitation intensity.
+    - **Cyclone**: Calculated via sea surface temperature, wind speed, and atmospheric pressure.
+- **Historical Analysis**: 24-hour "Risk Replay" charts showing how hazard levels have trended over the past day.
+- **Notification Center**: Real-time unread/read alerts for critical environmental threats.
+- **Interactive Profiles**: Full user management and editable profiles.
+
+## 4. System Architecture (UML Diagram)
+
+```mermaid
+graph TD
+    A[Global Satellite Feeds - ESA/NASA] -->|Tile Stream| B[Satellite Portal]
+    C[Open-Meteo API] -->|Weather JSON| D[FastAPI Backend]
+    E[Nominatim API] -->|Geocoding| D
+    
+    subgraph "Backend (FastAPI)"
+        D -->|Feature Extraction| F[ML Model Engine]
+        F -->|Risk Scores| G[Telemetry Cache]
+        G -->|SSE Stream| H[Real-time Stream API]
+    end
+    
+    subgraph "Frontend (React)"
+        H -->|EventSource| I[Dashboard Controller]
+        I -->|Props| J[Live Leaflet Map]
+        I -->|State| K[Risk Analysis Charts]
+        I -->|Props| L[Satellite Portal]
+    end
+```
+
+## 5. Working Flow
+1. **Data Ingestion**: The backend fetches real-time weather parameters (Wind, Rain, Temp, Pressure) for all tracked coordinates every few minutes.
+2. **Preprocessing**: The `Processor` module cleans data and extracts geospatial features (elevation, slope) using coordinate lookups.
+3. **ML Inference**:
+    - The `DisasterPredictor` applies non-linear logic (simulating ML) to weather and terrain features.
+    - Confidence scores (0-100%) are generated for Flood, Landslide, and Cyclone.
+4. **Real-Time Streaming**: The backend uses Server-Sent Events (SSE) to push these updates to the React frontend every 5 seconds.
+5. **Visualization**:
+    - The **Live Map** renders colored markers (Green: Stable, Yellow: Watch, Red: Critical).
+    - **Recharts** visualize the hazard trajectory.
+    - **Leaflet** overlays live satellite tiles over the target region.
+
+## 6. Project Structure
+```
+Disaster Intelligence/
+├── backend/
+│   ├── main.py             # Entry point, API routes, and SSE Stream logic
+│   ├── ml_model/
+│   │   ├── predictor.py    # Risk prediction algorithms
+│   │   └── processor.py    # Feature extraction & data cleaning
+│   └── venv/               # Virtual environment
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # UI Modules (Map, RiskAnalysis, SatelliteView)
+│   │   ├── App.jsx         # Main application state/routing
+│   │   ├── main.jsx        # Root entry point
+│   │   └── index.css       # Global styling & Tailwind config
+│   └── package.json        # Dependencies (React, Leaflet, Axios, Recharts)
+└── project.txt             # Project Documentation
+```
+
+## 7. Key Technologies
+- **Frontend**: React.js, Tailwind CSS, Lucide-React, Framer Motion.
+- **Mapping**: Leaflet, React-Leaflet, Leaflet.heat, Esri Satellite Tiles.
+- **Backend**: FastAPI (Python), Uvicorn, Pydantic.
+- **Charts**: Recharts (Dynamic Area Charts).
+- **Communication**: SSE (Server-Sent Events) for low-latency updates.
+
+## 8. API Inventory & Key Management
+The system is designed to be highly scalable and cost-effective by utilizing high-quality Open-Source and Public APIs. No commercial API keys are hardcoded, making the system easy to deploy for emergency services.
+
+- **Open-Meteo API**: **(Public - No Key Needed)**
+  - *Core Function*: Provides live atmospheric telemetry (Surface Temperature, Wind Speed at 10m, Precipitation, and Surface Pressure). 
+  - *Working Principle*: Backend sends batch coordinate queries; the API returns high-precision GFS/ECMWF model data.
+- **Nominatim (OpenStreetMap)**: **(Open Protocol)**
+  - *Core Function*: Handles forward geocoding (Search bar) and reverse geocoding (Map click discovery).
+  - *Working Principle*: Converts Lat/Lng into human-readable city/region names to identify impacted zones.
+- **Esri World Imagery**: **(Public GIS Server)**
+  - *Core Function*: Provides the high-resolution Satellite Base Layer.
+  - *Working Principle*: Leaflet fetches XYZ tiles dynamically as the user pans/zooms across the globe.
+- **CartoDB Voyager Labels**: **(Public Overlay)**
+  - *Core Function*: Overlays city names, state borders, and highways over the raw satellite imagery for precise location identification.
+
+## 9. Working Principles
+- **Asynchronous Data Fusion**: The platform does not wait for user input. The backend runs a continuous loop that fuses satellite processing states with live environmental telemetry, ensuring the "AI Risk Score" is never stale.
+- **Dynamic Risk Scaling**: Unlike static systems that tag a city as "High Risk," DisasterOS uses live thresholds. If wind speeds exceed 60km/h and pressure drops below 980hPa, the **Cyclone Risk** dynamically scales from "Stable" to "Critical" in real-time.
+- **State Persistence & Replay**: By caching metrics every 15 minutes, the system allows for the **Risk Trajectory Replay**, letting officials see if a flood threat is rising or receding over a 24-hour window.
+- **Non-Blocking Architecture**: The use of **FastAPI's Asynchronous Tasks** and **React's Functional State Updates** ensures the map remains "fluid" and zoomable even while high-intensity ML calculations are occurring in the background.
+
+## 10. Final Solution
+DisasterOS is a **Unified Geospatial Intelligence Suite** that turns raw satellite and weather data into actionable human insights. 
+
+The final solution provides a "Single Pane of Glass" for disaster management:
+1. **Detect**: ML models identify rising hazard confidence scores.
+2. **Visualize**: Heatmaps and markers pinpoint exact coordinates of the threat.
+3. **Monitor**: Live telemetry widgets provide second-by-second updates.
+4. **Alert**: The notification system ensures no critical event is missed by the operator.
+5. **Scale**: The ability to click anywhere on Earth to start a new monitoring node makes it a globally applicable solution for any disaster scenario.
+
