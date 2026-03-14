@@ -116,11 +116,18 @@ const RiskAnalysis = ({ locationData }) => {
     <div className="flex flex-col h-full bg-surface/90 backdrop-blur text-slate-200">
       <div className="px-6 py-4 border-b border-slate-700/50 bg-slate-800/20">
         <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Module 3: AI Prediction Output</div>
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="text-xl font-black tracking-tight text-white">{location} Analysis</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xl font-black tracking-tight text-white uppercase italic">{location} Analysis</h2>
           <span className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider bg-surface border border-slate-700 ${riskColor}`}>
             {overallRisk}
           </span>
+        </div>
+        
+        {/* Modern Risk Score Cards */}
+        <div className="grid grid-cols-3 gap-3">
+          <RiskScoreCard label="Flood" value={flood_risk} color="text-blue-400" bgColor="bg-blue-400/10" />
+          <RiskScoreCard label="Landslide" value={landslide_risk} color="text-amber-500" bgColor="bg-amber-500/10" />
+          <RiskScoreCard label="Cyclone" value={cyclone_risk} color="text-indigo-400" bgColor="bg-indigo-400/10" />
         </div>
       </div>
 
@@ -173,6 +180,14 @@ const RiskAnalysis = ({ locationData }) => {
                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
                         <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                       </linearGradient>
+                      <linearGradient id="colorLandslide" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorCyclone" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#818cf8" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#818cf8" stopOpacity={0}/>
+                      </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                     <XAxis dataKey="time" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
@@ -181,8 +196,9 @@ const RiskAnalysis = ({ locationData }) => {
                       contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
                       itemStyle={{ color: '#f8fafc' }}
                     />
-                    <Area type="monotone" dataKey="flood" stroke="#3b82f6" fillOpacity={1} fill="url(#colorFlood)" strokeWidth={2} />
-                    <Area type="monotone" dataKey="landslide" stroke="#f59e0b" fillOpacity={0.1} fill="#f59e0b" strokeWidth={2} />
+                    <Area type="monotone" dataKey="flood" stroke="#3b82f6" fillOpacity={1} fill="url(#colorFlood)" strokeWidth={2} name="Flood Risk (%)" />
+                    <Area type="monotone" dataKey="landslide" stroke="#f59e0b" fillOpacity={1} fill="url(#colorLandslide)" strokeWidth={2} name="Landslide Risk (%)" />
+                    <Area type="monotone" dataKey="cyclone" stroke="#818cf8" fillOpacity={1} fill="url(#colorCyclone)" strokeWidth={2} name="Cyclone Risk (%)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -289,6 +305,15 @@ const RiskAnalysis = ({ locationData }) => {
     </div>
   );
 };
+
+function RiskScoreCard({ label, value, color, bgColor }) {
+  return (
+    <div className={`${bgColor} border border-white/5 rounded-xl p-2.5 flex flex-col items-center justify-center transition-all hover:scale-[1.02] transform`}>
+      <span className="text-[9px] uppercase font-black text-slate-400 mb-1 tracking-widest">{label}</span>
+      <span className={`text-lg font-mono font-black ${color}`}>{Math.round(value)}%</span>
+    </div>
+  );
+}
 
 function TabButton({ active, onClick, label }) {
   return (
