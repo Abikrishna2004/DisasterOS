@@ -29,6 +29,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "message": "DisasterOS AI Pipeline is live",
+        "version": "2.1.0",
+        "endpoints": ["/api/predictions", "/api/alerts", "/api/notifications"]
+    }
+
 class Prediction(BaseModel):
     location: str
     lat: float
