@@ -10,13 +10,15 @@ import {
   Zap
 } from 'lucide-react';
 
+import API_BASE_URL from '../config';
+
 const SystemIntegration = () => {
   const [isOptimizing, setIsOptimizing] = React.useState(false);
 
   const handleOptimize = async () => {
     setIsOptimizing(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/ml/optimize');
+      const res = await axios.post(`${API_BASE_URL}/api/ml/optimize`);
       alert(res.data.message);
     } catch (error) {
       console.error("Optimization failed:", error);

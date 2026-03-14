@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Bell, AlertCircle, Info, CheckCircle2, ShieldAlert, Trash2, Search } from 'lucide-react';
 
+import API_BASE_URL from '../config';
+
 const NotificationCenter = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchNotifications = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/notifications');
+      const res = await axios.get(`${API_BASE_URL}/api/notifications`);
       setNotifications(res.data);
     } catch (error) {
       console.error("Notifications fetch failed:", error);
@@ -24,7 +26,7 @@ const NotificationCenter = () => {
   const handleDeleteAll = async () => {
     if (window.confirm("Clear all system notifications?")) {
        try {
-          await axios.delete('http://localhost:8000/api/notifications');
+          await axios.delete(`${API_BASE_URL}/api/notifications`);
           setNotifications([]);
        } catch (error) {
           console.error("Delete failed:", error);

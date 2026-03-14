@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { MapContainer, TileLayer, Tooltip, Rectangle, useMap } from 'react-leaflet';
 
+import API_BASE_URL from '../config';
+
 const SatelliteIntelligence = ({ selectedLocation }) => {
   const [metadata, setMetadata] = useState([]);
   const [stats, setStats] = useState({ data_ingested: "0.0 TB", satellites_online: 0, map_layers: 24, ml_inference: "0.0ms" });
@@ -23,7 +25,7 @@ const SatelliteIntelligence = ({ selectedLocation }) => {
   const handleIngest = async () => {
     setIsIngesting(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/satellite/ingest');
+      const res = await axios.post(`${API_BASE_URL}/api/satellite/ingest`);
       alert(res.data.message);
       fetchMetadata();
     } catch (error) {
@@ -36,8 +38,8 @@ const SatelliteIntelligence = ({ selectedLocation }) => {
   const fetchMetadata = async () => {
     try {
       const [metaRes, statsRes] = await Promise.all([
-         axios.get('http://localhost:8000/api/satellite/metadata'),
-         axios.get('http://localhost:8000/api/satellite/stats')
+         axios.get(`${API_BASE_URL}/api/satellite/metadata`),
+         axios.get(`${API_BASE_URL}/api/satellite/stats`)
       ]);
       setMetadata(metaRes.data);
       setStats(statsRes.data.stats);

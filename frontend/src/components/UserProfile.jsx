@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { User, Mail, Shield, Building2, MapPin, Bell, LogOut, Settings } from 'lucide-react';
 
+import API_BASE_URL from '../config';
+
 const UserProfile = () => {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -13,7 +15,7 @@ const UserProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/user/profile');
+      const res = await axios.get(`${API_BASE_URL}/api/user/profile`);
       setProfile(res.data);
       setFormData(res.data);
     } catch (error) {
@@ -23,7 +25,7 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     try {
-      const res = await axios.post('http://localhost:8000/api/user/profile', formData);
+      const res = await axios.post(`${API_BASE_URL}/api/user/profile`, formData);
       setProfile(res.data);
       setIsEditing(false);
     } catch (error) {

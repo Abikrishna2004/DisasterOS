@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Cloud, Wind, Droplets, Thermometer, Eye, Navigation } from 'lucide-react';
 
+import API_BASE_URL from '../config';
+
 const WeatherWidget = ({ location }) => {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -11,7 +13,7 @@ const WeatherWidget = ({ location }) => {
       const fetchWeather = async () => {
         setLoading(true);
         try {
-          const res = await axios.get(`http://localhost:8000/api/weather/${location}`);
+          const res = await axios.get(`${API_BASE_URL}/api/weather/${location}`);
           setWeather(res.data);
         } catch (error) {
           console.error("Weather fetch failed:", error);

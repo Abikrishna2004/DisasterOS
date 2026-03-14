@@ -19,6 +19,8 @@ const mockHistoryData = [
   { date: '2025', score: 85 },
 ];
 
+import API_BASE_URL from '../config';
+
 const RiskAnalysis = ({ locationData }) => {
   const [tab, setTab] = useState('forecast');
   const [isSimulating, setIsSimulating] = useState(false);
@@ -31,7 +33,7 @@ const RiskAnalysis = ({ locationData }) => {
       const fetchHistory = async () => {
         setLoadingHistory(true);
         try {
-          const res = await axios.get(`http://localhost:8000/api/history/${locationData.location}`);
+          const res = await axios.get(`${API_BASE_URL}/api/history/${locationData.location}`);
           setHistoryData(res.data);
         } catch (error) {
           console.error("Error fetching history:", error);
@@ -43,7 +45,7 @@ const RiskAnalysis = ({ locationData }) => {
       const fetchAiInsight = async () => {
         setAiInsight({ insight: 'Analyzing satellite telemetry...', status: 'pending' });
         try {
-          const res = await axios.get(`http://localhost:8000/api/ai/analyze/${locationData.location}`);
+          const res = await axios.get(`${API_BASE_URL}/api/ai/analyze/${locationData.location}`);
           setAiInsight(res.data);
         } catch (error) {
           console.error("AI Insight failed:", error);
@@ -60,7 +62,7 @@ const RiskAnalysis = ({ locationData }) => {
     if (!locationData?.location) return;
     setIsSimulating(true);
     try {
-      await axios.get(`http://localhost:8000/api/simulation?location=${locationData.location}`);
+      await axios.get(`${API_BASE_URL}/api/simulation?location=${locationData.location}`);
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 2000));
     } catch (error) {

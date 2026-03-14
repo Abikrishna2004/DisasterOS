@@ -14,6 +14,8 @@ const getMarkerColor = (risk) => {
 
 import 'leaflet.heat';
 
+import API_BASE_URL from '../config';
+
 // Component to dynamically change map view
 function ChangeView({ center, zoom }) {
   const map = useMap();
@@ -71,7 +73,7 @@ function MapEvents({ onLocationAdd, onSelectLocation }) {
         const displayName = res.data.display_name || "";
         const name = address?.city || address?.town || address?.village || address?.suburb || address?.neighbourhood || address?.county || (displayName.split(',')[0]) || "Target Point";
         
-        await axios.post('http://localhost:8000/api/location', {
+        await axios.post(`${API_BASE_URL}/api/location`, {
           name: name,
           lat: lat,
           lng: lng

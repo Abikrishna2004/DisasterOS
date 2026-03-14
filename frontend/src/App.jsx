@@ -25,6 +25,8 @@ import WeatherWidget from './components/WeatherWidget';
 import UserProfile from './components/UserProfile';
 import NotificationCenter from './components/NotificationCenter';
 
+import API_BASE_URL from './config';
+
 function App() {
   const [predictions, setPredictions] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -37,8 +39,8 @@ function App() {
     try {
       const config = { timeout: 3000 };
       const [predRes, alertRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/predictions', config),
-        axios.get('http://localhost:8000/api/alerts', config)
+        axios.get(`${API_BASE_URL}/api/predictions`, config),
+        axios.get(`${API_BASE_URL}/api/alerts`, config)
       ]);
       
       const newPredictions = predRes.data || [];
@@ -80,7 +82,7 @@ function App() {
           const topResult = res.data[0];
           const name = topResult.display_name.split(',')[0];
           
-          await axios.post('http://localhost:8000/api/location', {
+          await axios.post(`${API_BASE_URL}/api/location`, {
             name: name,
             lat: parseFloat(topResult.lat),
             lng: parseFloat(topResult.lon)
@@ -109,7 +111,7 @@ function App() {
     if (window.confirm("Purge all custom monitoring points and reset to baseline?")) {
       setLoading(true);
       try {
-        const res = await axios.delete('http://localhost:8000/api/location');
+        const res = await axios.delete(`${API_BASE_URL}/api/location`);
         alert(res.data.message);
         await fetchData();
         const baseline = ['Coimbatore', 'Srinagar', 'Mumbai', 'Guwahati', 'Chennai'];
