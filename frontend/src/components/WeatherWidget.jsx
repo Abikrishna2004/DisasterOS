@@ -13,7 +13,7 @@ const WeatherWidget = ({ location }) => {
       const fetchWeather = async () => {
         setLoading(true);
         try {
-          const res = await axios.get(`${API_BASE_URL}/api/weather/${location}`);
+          const res = await axios.get(`${API_BASE_URL}/api/weather/${encodeURIComponent(location)}`);
           setWeather(res.data);
         } catch (error) {
           console.error("Weather fetch failed:", error);

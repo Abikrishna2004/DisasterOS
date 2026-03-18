@@ -6,13 +6,15 @@ import L from 'leaflet';
 // Fix leafet icon issue
 delete L.Icon.Default.prototype._getIconUrl;
 
+window.L = L; // Important fix for leaflet.heat plugin with Vite
+import 'leaflet.heat';
+
+
 const getMarkerColor = (risk) => {
   if (risk === 'red') return '#ef4444'; // danger
   if (risk === 'yellow') return '#f59e0b'; // warning
   return '#10b981'; // success
 };
-
-import 'leaflet.heat';
 
 import API_BASE_URL from '../config';
 
@@ -38,7 +40,7 @@ function HeatLayer({ predictions }) {
     
     // Format: [[lat, lng, intensity], ...]
     const points = predictions.map(p => {
-      const maxRisk = Math.max(p.flood_risk, p.landslide_risk, p.cyclone_risk);
+      const maxRisk = Math.max(p.flood_risk || 0, p.landslide_risk || 0, p.cyclone_risk || 0);
       return [p.lat, p.lng, maxRisk / 100];
     });
 
